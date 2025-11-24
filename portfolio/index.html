@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vipul Shukla | Portfolio</title>
+    <!-- Importing a professional font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ========================= 1. Header Section (Navigation Only) ========================= -->
+    <header id="top">
+        <div class="container header-content">
+            <!-- Simplified Title matching the screenshot style -->
+            <h1 class="logo">Online Portfolio</h1> 
+            
+            <nav>
+                <ul>
+                    <!-- Uppercase links to match screenshot -->
+                    <li><a href="#about">ABOUT ME</a></li>
+                    <li><a href="#skills">SKILLS</a></li>
+                    <li><a href="#projects">WORKS</a></li>
+                    <li><a href="#contact-info">CONTACT US</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ========================= NEW: Hero Section (Matching Screenshot Style) ========================= -->
+    <section id="hero">
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h2 class="hero-name">VIPUL SHUKLA</h2>
+                <p class="hero-intro">Hi, I am an Aspiring Developer and ICT Degree holder. I focus on building efficient, clean-code solutions for real-world problems.</p>
+                <!-- Button matching the screenshot style -->
+                <a href="#contact-info" class="btn primary-btn hero-btn">HIRE ME</a>
+            </div>
+            <!-- Note: The large background image effect is applied via CSS -->
+        </div>
+    </section>
+    
+    <main>
+        
+        <!-- ========================= 2. About Section (Adjusted to flow after Hero) ========================= -->
+        <section id="about" class="section-padding">
+            <div class="container about-content-full">
+                <!-- Profile image is now hidden by default in CSS to simplify the layout 
+                     and focus on the dark Hero section, matching the main visual of the screenshot. -->
+                
+                <div class="bio-text">
+                    <h2>ABOUT ME</h2>
+                    <p class="about-tagline">I Am Developer blends expertise with industry know-how to guide your next property development.</p>
+                    <p>Software Developers use software development languages and tools to write, edit, maintain and test computer software. Software Developers follow the software development lifecycle (SDLC) to plan, design, build, test, and deploy software applications ranging from websites and mobile applications to web applications and video games. In addition to creating new software, Software Developers improve and maintain the working order of existing software.</p>
+                    <!-- Download button moved here, matching the placement in the screenshot's 'About Me' section -->
+                    <a href="assets/VipulShukla_Resume.pdf" download="VipulShukla_Resume.pdf" class="btn secondary-btn">DOWNLOAD RESUME</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================= 3. Skills Section ========================= -->
+        <section id="skills" class="section-padding skills-bg">
+            <div class="container">
+                <h2>Technical Skills</h2>
+                <ul class="skills-list">
+                    <li>HTML5</li>
+                    <li>CSS3 (Flexbox & Grid)</li>
+                    <li>JavaScript (ES6+)</li>
+                    <li>Responsive Design</li>
+                    <li>Git & GitHub</li>
+                    <li>Problem Solving</li>
+                    <li>Data Structures</li>
+                    <li>Web Accessibility</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ========================= 4. Projects Section ========================= -->
+        <section id="projects" class="section-padding">
+            <div class="container">
+                <h2>Featured Projects</h2>
+                <div class="projects-grid">
+                    
+                    <!-- Project 1: Automated File Manager -->
+                    <div class="project-card">
+                        <!-- Placeholder image - replace with a screenshot -->
+                        <img src="https://placehold.co/600x400/2c3e50/ffffff?text=File+Manager" alt="Screenshot of Automated File Manager">
+                        <h3>Python File Automation Tool</h3>
+                        <p>A command-line utility developed in Python to automatically sort and manage files across multiple directories based on file type and creation date. Focuses on improving system organization and efficiency.</p>
+                        <!-- No Live Demo link provided -->
+                        <a href="https://github.com/vipul080/Automated-File-Manager" target="_blank" class="project-link">GitHub Repository</a>
+                    </div>
+                    
+                    <!-- Project 2: NodeCanvas -->
+                    <div class="project-card">
+                        <!-- Placeholder image - replace with a screenshot -->
+                        <img src="https://placehold.co/600x400/2c3e50/ffffff?text=Node+Canvas" alt="Screenshot of Node Canvas project">
+                        <h3>NodeCanvas: Visual Programming Environment</h3>
+                        <p>A visual node-based programming environment that allows users to create programs by connecting nodes in a canvas interface. Features include real-time program execution, support for various node types (control flow, data operations), and an intuitive drag-and-drop UI.</p>
+                        <!-- No Live Demo link provided -->
+                        <a href="https://github.com/vipul080/Automated-File-Manager" target="_blank" class="project-link">GitHub Repository</a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================= 5. Contact Section ========================= -->
+        <section id="contact-info" class="section-padding skills-bg">
+            <div class="container contact-content">
+                
+                <div class="contact-box">
+                    <h2>Get In Touch</h2>
+                    <p>I'm currently seeking new opportunities and open to collaboration. Feel free to reach out via any of the channels below.</p>
+                    <ul class="contact-list">
+                        <li><strong>Email:</strong> <a href="mailto:vipulshukla191@gmail.com">vipulshukla191@gmail.com</a></li>
+                        <li><strong>Phone:</strong> <a href="tel:+918278845758">+91 8278845758</a></li>
+                        <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/vipul-shukla-380b9925a" target="_blank">linkedin.com/in/vipul-shukla-380b9925a</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========================= 6. Footer ========================= -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Vipul Shukla. All rights reserved.</p>
+            <p><a href="#top" class="footer-link">Back to Top</a></p>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic JS Calculator</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind for a calculator-friendly light theme with high contrast
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'calc-bg': '#f3f4f6',    // Gray-100 (Calculator body)
+                        'display-bg': '#1f2937', // Gray-800 for the dark display
+                        'primary-op': '#f97316', // Orange-500 for operators (remains high-contrast)
+                        'number-btn': '#ffffff', // White for numbers
+                        'utility-btn': '#e5e7eb', // Gray-200 for utility (AC, % etc.)
+                        'text-dark': '#1f2937',  // Dark text for light buttons
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Roboto Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom CSS to enforce the grid structure and button appearance */
+        .calculator-grid {
+            /* 5 rows, 4 columns for a standard calculator look */
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: minmax(100px, auto) repeat(5, 1fr);
+            gap: 1px; /* Minimal gap between buttons */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 
+                        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .btn {
+            @apply p-4 text-2xl font-semibold rounded-none transition duration-150 ease-in-out;
+        }
+        /* Updated contrast for number buttons */
+        .btn-num {
+            @apply bg-number-btn text-text-dark hover:bg-gray-100;
+        }
+        .btn-op {
+            @apply bg-primary-op text-white hover:bg-orange-600;
+        }
+        /* Updated contrast for utility buttons */
+        .btn-utility {
+            @apply bg-utility-btn text-text-dark hover:bg-gray-300;
+        }
+        .span-2 {
+            grid-column: span 2;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen p-4 font-sans">
+
+    <!-- Calculator Container -->
+    <div class="w-full max-w-sm bg-calc-bg rounded-xl overflow-hidden shadow-2xl">
+        <div class="calculator-grid grid h-full">
+
+            <!-- Display Screen (Kept dark for better number contrast) -->
+            <div id="display" class="col-span-4 bg-display-bg text-right p-5 text-white font-mono flex flex-col justify-end items-end break-all">
+                <div id="previous-operand" class="text-xl text-gray-400 h-6"></div>
+                <div id="current-operand" class="text-5xl font-bold h-10 mt-1">0</div>
+            </div>
+
+            <!-- First Row (Utility) -->
+            <button id="clear" class="btn btn-utility">AC</button>
+            <button id="delete" class="btn btn-utility">&larr;</button>
+            <button data-operation="%" class="btn btn-utility">%</button>
+            <button data-operation="÷" class="btn btn-op">÷</button>
+
+            <!-- Second Row -->
+            <button data-number="7" class="btn btn-num">7</button>
+            <button data-number="8" class="btn btn-num">8</button>
+            <button data-number="9" class="btn btn-num">9</button>
+            <button data-operation="*" class="btn btn-op">×</button>
+
+            <!-- Third Row -->
+            <button data-number="4" class="btn btn-num">4</button>
+            <button data-number="5" class="btn btn-num">5</button>
+            <button data-number="6" class="btn btn-num">6</button>
+            <button data-operation="-" class="btn btn-op">-</button>
+
+            <!-- Fourth Row -->
+            <button data-number="1" class="btn btn-num">1</button>
+            <button data-number="2" class="btn btn-num">2</button>
+            <button data-number="3" class="btn btn-num">3</button>
+            <button data-operation="+" class="btn btn-op">+</button>
+
+            <!-- Fifth Row (Bottom) -->
+            <button data-number="0" class="btn btn-num span-2">0</button>
+            <button data-number="." class="btn btn-num">.</button>
+            <button id="equals" class="btn btn-op">=</button>
+        </div>
+    </div>
+
+    <!-- Notification Box (Replaces alert()) -->
+    <div id="notificationBox" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 p-4 hidden">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full transform transition-all">
+            <h3 class="text-xl font-bold mb-3 text-red-500">Calculator Error</h3>
+            <p id="notificationMessage" class="text-gray-600 mb-4"></p>
+            <button onclick="closeNotification()" class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition duration-200">Close</button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Calculator Class and Logic ---
+        class Calculator {
+            constructor(previousOperandTextElement, currentOperandTextElement) {
+                this.previousOperandTextElement = previousOperandTextElement;
+                this.currentOperandTextElement = currentOperandTextElement;
+                this.clear();
+            }
+
+            // Clear all variables
+            clear() {
+                this.currentOperand = '0';
+                this.previousOperand = '';
+                this.operation = undefined;
+            }
+
+            // Remove the last digit
+            delete() {
+                if (this.currentOperand === '0' || this.currentOperand.length === 1) {
+                    this.currentOperand = '0';
+                } else {
+                    this.currentOperand = this.currentOperand.toString().slice(0, -1);
+                }
+            }
+
+            // Add a number or decimal point
+            appendNumber(number) {
+                // Prevent multiple decimal points
+                if (number === '.' && this.currentOperand.includes('.')) return;
+                
+                // Replace initial '0' if a new number (not '.') is pressed
+                if (this.currentOperand === '0' && number !== '.') {
+                    this.currentOperand = number.toString();
+                } else {
+                    this.currentOperand = this.currentOperand.toString() + number.toString();
+                }
+            }
+
+            // Choose an operation (+, -, *, /)
+            chooseOperation(operation) {
+                if (this.currentOperand === '') return;
+                if (this.previousOperand !== '') {
+                    this.compute();
+                }
+                this.operation = operation;
+                this.previousOperand = this.currentOperand;
+                this.currentOperand = '';
+            }
+
+            // Perform the calculation
+            compute() {
+                let computation;
+                
+                // Logic to reuse previous operand if the second operand is missing
+                let currentOperandToParse = this.currentOperand;
+                if (this.operation != null && this.currentOperand === '' && this.previousOperand !== '') {
+                    currentOperandToParse = this.previousOperand;
+                }
+
+                const prev = parseFloat(this.previousOperand);
+                const current = parseFloat(currentOperandToParse);
+
+                // Check if we have an operation and valid numbers to compute
+                if (this.operation == null || isNaN(prev) || isNaN(current)) return;
+
+                switch (this.operation) {
+                    case '+':
+                        computation = prev + current;
+                        break;
+                    case '-':
+                        computation = prev - current;
+                        break;
+                    case '*':
+                        computation = prev * current;
+                        break;
+                    case '÷':
+                        if (current === 0) {
+                             showNotification('Error: Cannot divide by zero!');
+                            this.clear(); // Clear state after error
+                            this.updateDisplay();
+                            return;
+                        }
+                        computation = prev / current;
+                        break;
+                    case '%':
+                        computation = prev % current;
+                        break;
+                    default:
+                        return;
+                }
+                this.currentOperand = computation;
+                this.operation = undefined;
+                this.previousOperand = '';
+            }
+
+            // Format the number for display (including commas)
+            getDisplayNumber(number) {
+                const stringNumber = number.toString();
+                const integerDigits = parseFloat(stringNumber.split('.')[0]);
+                const decimalDigits = stringNumber.split('.')[1];
+                let integerDisplay;
+
+                if (isNaN(integerDigits)) {
+                    integerDisplay = '';
+                } else {
+                    // Use standard toLocaleString for large number formatting
+                    integerDisplay = integerDigits.toLocaleString('en', { maximumFractionDigits: 0 });
+                }
+                
+                if (decimalDigits != null) {
+                    return `${integerDisplay}.${decimalDigits}`;
+                } else {
+                    return integerDisplay;
+                }
+            }
+
+            // Update the display elements
+            updateDisplay() {
+                this.currentOperandTextElement.innerText = this.getDisplayNumber(this.currentOperand);
+                if (this.operation != null) {
+                    this.previousOperandTextElement.innerText = 
+                        `${this.getDisplayNumber(this.previousOperand)} ${this.operation}`;
+                } else {
+                    this.previousOperandTextElement.innerText = '';
+                }
+            }
+        }
+
+        // --- DOM Element Selection ---
+        const numberButtons = document.querySelectorAll('[data-number]');
+        const operationButtons = document.querySelectorAll('[data-operation]');
+        const equalsButton = document.getElementById('equals');
+        const deleteButton = document.getElementById('delete');
+        const clearButton = document.getElementById('clear');
+        const previousOperandTextElement = document.getElementById('previous-operand');
+        const currentOperandTextElement = document.getElementById('current-operand');
+
+        // Initialize Calculator
+        const calculator = new Calculator(previousOperandTextElement, currentOperandTextElement);
+
+        // --- Event Listeners for Buttons ---
+
+        // Numbers
+        numberButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                calculator.appendNumber(button.innerText);
+                calculator.updateDisplay();
+            });
+        });
+
+        // Operations
+        operationButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // FIX APPLIED HERE: Read the program operator symbol from the data-operation attribute
+                calculator.chooseOperation(button.getAttribute('data-operation'));
+                calculator.updateDisplay();
+            });
+        });
+
+        // Equals
+        equalsButton.addEventListener('click', () => {
+            calculator.compute();
+            calculator.updateDisplay();
+        });
+
+        // Clear (AC)
+        clearButton.addEventListener('click', () => {
+            calculator.clear();
+            calculator.updateDisplay();
+        });
+
+        // Delete (Backspace)
+        deleteButton.addEventListener('click', () => {
+            calculator.delete();
+            calculator.updateDisplay();
+        });
+
+        // --- Custom Notification Modal Functions ---
+        const notificationBox = document.getElementById('notificationBox');
+        const notificationMessage = document.getElementById('notificationMessage');
+        
+        function showNotification(message) {
+            notificationMessage.textContent = message;
+            notificationBox.classList.remove('hidden');
+        }
+
+        function closeNotification() {
+            notificationBox.classList.add('hidden');
+        }
+
+    </script>
+</body>
+</html>
